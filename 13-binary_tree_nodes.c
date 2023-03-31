@@ -1,4 +1,5 @@
 #include "binary_trees.h"
+
 /**
  * binary_tree_nodes - count nodes with kids
  * @tree: the tree
@@ -16,5 +17,4 @@ size_t binary_tree_nodes(const binary_tree_t *tree)
 			binary_tree_nodes(tree->right));
 	return (0);
 }
-Footer
 
