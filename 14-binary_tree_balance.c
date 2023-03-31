@@ -1,4 +1,5 @@
 #include "binary_trees.h"
+
 /**
  * binary_tree_balance- count balance factor of tree
  * @tree: the tree
@@ -39,4 +40,3 @@ size_t binary_tree_height(const binary_tree_t *tree)
 	/* compare and return tallest */
 	return ((lh > rh ? lh : rh) + 1);
 }
-Footer

@@ -1,4 +1,5 @@
 #include "binary_trees.h"
+
 /**
  * binary_tree_is_full - check if tree is full which means every node has 0
  * or 2 children.
