@@ -1,43 +1,64 @@
 #include "binary_trees.h"
 
 /**
- * binary_tree_levelorder - goes through a binary tree using
- * level-order traversal
- * @tree: pointer to the root node of the tree to traverse
- * @func: pointer to a function to call for each node
- * Return: none
+ * count_nodes - Counts ths inside a tree
+ * @root:  node
+ *
+ * Return: Number odes
  */
-void binary_tree_levelorder(const binary_tree_t *tree, void (*func)(int))
+
+int count_nodes(binary_tree_t *root)
 {
-	/* Check if the tree or function pointer is NULL */
-	if (tree == NULL || func == NULL)
-		return;
+	if (!root)
+		return (0);
 
-	/* Create a queue to store nodes for level-order traversal */
-	queue_t *queue = NULL;
-
-	/* Enqueue the root node to the queue */
-	enqueue(&queue, (void *)tree);
-
-	/* Loop through all nodes in the queue */
-	while (queue != NULL)
-	{
-		/* Dequeue the front node from the queue */
-		const binary_tree_t *node = (const binary_tree_t *)dequeue(&queue);
-
-		/* Call the function on the node value */
-		func(node->n);
-
-		/* Enqueue the left child node to the queue */
-		if (node->left != NULL)
-			enqueue(&queue, (void *)(node->left));
-
-		/* Enqueue the right child node to the queue */
-		if (node->right != NULL)
-			enqueue(&queue, (void *)(node->right));
-	}
-
-	/* Free the queue after traversal */
-	free_queue(queue);
+	return (1 + count_nodes(root->left) + count_nodes(root->right));
 }
 
+
+/**
+ * is_complete - Checks if a tree is complete
+ * @root: Pointer to tree's root
+ * @index: Index of the node been evaluated
+ * @n: number of trees nod
+ *
+ * Return: 1 if the tree is a heap, 0 otherwise
+ */
+
+int is_complete(binary_tree_t *root, int index, int n)
+{
+	if (!root)
+		return (0);
+
+	if (index >= n)
+		return (0);
+	if (!root->left && !root->right)
+		return (1);
+	if (root->right && !root->left)
+		return (0);
+	if (root->left && !root->right)
+		return (is_complete(root->left, index * 2 + 1, n));
+
+	return (is_complete(root->left, index * 2 + 1, n) &&
+		is_complete(root->right, index * 2 + 2, n));
+}
+
+/**
+ * binary_tree_is_complete - check for bt complete
+ * @tree: Pointer to root
+ *
+ * Return: 1 if
+ */
+int binary_tree_is_complete(const binary_tree_t *tree)
+{
+	int nod;
+	binary_tree_t *root;
+
+	if (!tree)
+		return (0);
+
+	root = (binary_tree_t *)tree;
+	nod = count_nodes(root);
+
+	return (is_complete(root, 0, nod));
+}
