@@ -1,84 +1,123 @@
 #include "binary_trees.h"
-#include <stdlib.h>
 
 /**
- * binary_tree_levelorder - goes through a
- * binary tree using level-order traversal
- * @tree: pointer to the root node of the tree to traverse
- * @func: pointer to a function to call for each node
- *
- * Return: void
+ * binary_tree_height - Measures the height of a binary tree.
+ * @tree: Tree to traverse.
+ * Return: Height of the tree.
  */
-void binary_tree_levelorder(const binary_tree_t *tree, void (*func)(int))
+size_t binary_tree_height(const binary_tree_t *tree)
 {
-	if (tree == NULL || func == NULL)
-		return;
+	size_t l = 0, r = 0;
 
-	queue_t *queue = NULL;
-	binary_tree_t *current_node;
+	if (tree == NULL)
+		return (0);
 
-	enqueue(&queue, (binary_tree_t *)tree);
-	while (queue != NULL)
+	if (tree)
 	{
-		current_node = dequeue(&queue);
-		func(current_node->n);
-
-		if (current_node->left != NULL)
-			enqueue(&queue, current_node->left);
-		if (current_node->right != NULL)
-			enqueue(&queue, current_node->right);
+		l = tree->left ? 1 + binary_tree_height(tree->left) : 0;
+		r = tree->right ? 1 + binary_tree_height(tree->right) : 0;
 	}
+	return ((l > r) ? l : r);
 }
 
 /**
- * enqueue - add a binary tree node to the queue
- *
- * @queue: pointer to the queue
- * @node: pointer to the binary tree node to add
- *
- * Return: void
+ * binary_tree_depth - Calculates the depth of a node from the root.
+ * @tree: Node to check.
+ * Return: 0 if it's the root or the node's depth.
  */
-void enqueue(queue_t **queue, binary_tree_t *node)
+size_t binary_tree_depth(const binary_tree_t *tree)
 {
-	queue_t *new_node = malloc(sizeof(queue_t));
+	return ((tree && tree->parent) ? 1 + binary_tree_depth(tree->parent) : 0);
+}
 
-	if (new_node == NULL)
-		exit(EXIT_FAILURE);
+/**
+ * linked_node - Creates a linked list of nodes at a specific depth.
+ * @head: Pointer to the head of the linked list.
+ * @tree: Node to store.
+ * @level: Depth of the node to store.
+ * Return: Nothing.
+ */
+void linked_node(link_t **head, const binary_tree_t *tree, size_t level)
+{
+	link_t *new, *aux;
 
-	new_node->node = node;
-	new_node->next = NULL;
+	new = malloc(sizeof(link_t));
+	if (new == NULL)
+		return;
 
-	if (*queue == NULL)
+	new->n = level;
+	new->node = tree;
+
+	if (*head == NULL)
 	{
-		*queue = new_node;
+		new->next = NULL;
+		*head = new;
 	}
 	else
 	{
-		queue_t *last_node = *queue;
-
-		while (last_node->next != NULL)
-			last_node = last_node->next;
-		last_node->next = new_node;
+		aux = *head;
+		while (aux->next != NULL)
+			aux = aux->next;
+		new->next = NULL;
+		aux->next = new;
 	}
 }
 
 /**
- * dequeue - remove a binary tree node from the queue
- *
- * @queue: pointer to the queue
- *
- * Return: pointer to the binary tree node removed from the queue
+ * recursion - Traverses the whole tree and stores each node
+ *             in a linked list using linked_node function.
+ * @head: Pointer to the head of the linked list.
+ * @tree: Node to check.
+ * Return: Nothing.
  */
-binary_tree_t *dequeue(queue_t **queue)
+void recursion(link_t **head, const binary_tree_t *tree)
 {
-	if (*queue == NULL)
-		return (NULL);
+	size_t level = 0;
 
-	binary_tree_t *node = (*queue)->node;
-	queue_t *next_node = (*queue)->next;
+	if (tree != NULL)
+	{
+		level = binary_tree_depth(tree);
+		linked_node(head, tree, level);
+		recursion(head, tree->left);
+		recursion(head, tree->right);
+	}
+}
 
-	free(*queue);
-	*queue = next_node;
-	return (node);
+/**
+ * binary_tree_levelorder - Prints the nodes of a binary tree in level-order.
+ * @tree: Root node.
+ * @func: Function to apply to each node.
+ * Return: Nothing.
+ */
+void binary_tree_levelorder(const binary_tree_t *tree, void (*func)(int))
+{
+	link_t *head = NULL, *aux;
+	size_t height = 0, count = 0;
+
+	if (!tree || !func)
+		return;
+
+	height = binary_tree_height(tree);
+	head = NULL;
+	recursion(&head, tree);
+
+	while (count <= height)
+	{
+		aux = head;
+		while (aux != NULL)
+		{
+			if (count == aux->n)
+				func(aux->node->n);
+			aux = aux->next;
+		}
+		count++;
+	}
+
+	while (head != NULL)
+	{
+		aux = head;
+		head = head->next;
+		free(aux);
+	}
 }
 
