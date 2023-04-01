@@ -1,41 +1,43 @@
 #include "binary_trees.h"
-
 /**
- * binary_tree_height - Measures the height of a binary tree.
- * @tree: Tree to traverse.
- * Return: Height of the tree.
+ * binary_tree_height - Function that measures the height of a binary tree
+ * @tree: tree to go through
+ * Return: the height
  */
 size_t binary_tree_height(const binary_tree_t *tree)
 {
-	size_t l = 0, r = 0;
+	size_t l = 0;
+	size_t r = 0;
 
 	if (tree == NULL)
-		return (0);
-
-	if (tree)
 	{
-		l = tree->left ? 1 + binary_tree_height(tree->left) : 0;
-		r = tree->right ? 1 + binary_tree_height(tree->right) : 0;
+		return (0);
 	}
-	return ((l > r) ? l : r);
+	else
+	{
+		if (tree)
+		{
+			l = tree->left ? 1 + binary_tree_height(tree->left) : 0;
+			r = tree->right ? 1 + binary_tree_height(tree->right) : 0;
+		}
+		return ((l > r) ? l : r);
+	}
 }
-
 /**
- * binary_tree_depth - Calculates the depth of a node from the root.
- * @tree: Node to check.
- * Return: 0 if it's the root or the node's depth.
+ * binary_tree_depth - depth of specified node from root
+ * @tree: node to check the depth
+ * Return: 0 is it is the root or number of depth
  */
 size_t binary_tree_depth(const binary_tree_t *tree)
 {
 	return ((tree && tree->parent) ? 1 + binary_tree_depth(tree->parent) : 0);
 }
-
 /**
- * linked_node - Creates a linked list of nodes at a specific depth.
- * @head: Pointer to the head of the linked list.
- * @tree: Node to store.
- * @level: Depth of the node to store.
- * Return: Nothing.
+ * linked_node - this function makes a linked list from depth level and node
+ * @head: pointer to head of linked list
+ * @tree: node to store
+ * @level: depth of node to store
+ * Return: Nothing
  */
 void linked_node(link_t **head, const binary_tree_t *tree, size_t level)
 {
@@ -43,11 +45,11 @@ void linked_node(link_t **head, const binary_tree_t *tree, size_t level)
 
 	new = malloc(sizeof(link_t));
 	if (new == NULL)
+	{
 		return;
-
+	}
 	new->n = level;
 	new->node = tree;
-
 	if (*head == NULL)
 	{
 		new->next = NULL;
@@ -57,18 +59,19 @@ void linked_node(link_t **head, const binary_tree_t *tree, size_t level)
 	{
 		aux = *head;
 		while (aux->next != NULL)
+		{
 			aux = aux->next;
+		}
 		new->next = NULL;
 		aux->next = new;
 	}
 }
-
 /**
- * recursion - Traverses the whole tree and stores each node
- *             in a linked list using linked_node function.
- * @head: Pointer to the head of the linked list.
- * @tree: Node to check.
- * Return: Nothing.
+ * recursion - goes through the complete tree and each stores each node
+ * in linked_node function
+ * @head: pointer to head of linked list
+ * @tree: node to check
+ * Return: Nothing by default it affects the pointer
  */
 void recursion(link_t **head, const binary_tree_t *tree)
 {
@@ -82,42 +85,44 @@ void recursion(link_t **head, const binary_tree_t *tree)
 		recursion(head, tree->right);
 	}
 }
-
 /**
- * binary_tree_levelorder - Prints the nodes of a binary tree in level-order.
- * @tree: Root node.
- * @func: Function to apply to each node.
- * Return: Nothing.
+ * binary_tree_levelorder - print the nodes element in a lever-order
+ * @tree: root node
+ * @func: function to use
+ * Return: Nothing
  */
 void binary_tree_levelorder(const binary_tree_t *tree, void (*func)(int))
 {
-	link_t *head = NULL, *aux;
+	link_t *head, *aux;
 	size_t height = 0, count = 0;
 
 	if (!tree || !func)
+	{
 		return;
-
-	height = binary_tree_height(tree);
-	head = NULL;
-	recursion(&head, tree);
-
-	while (count <= height)
-	{
-		aux = head;
-		while (aux != NULL)
-		{
-			if (count == aux->n)
-				func(aux->node->n);
-			aux = aux->next;
-		}
-		count++;
 	}
-
-	while (head != NULL)
+	else
 	{
-		aux = head;
-		head = head->next;
-		free(aux);
+		height = binary_tree_height(tree);
+		head = NULL;
+		recursion(&head, tree);
+		while (count <= height)
+		{
+			aux = head;
+			while (aux != NULL)
+			{
+				if (count == aux->n)
+				{
+					func(aux->node->n);
+				}
+				aux = aux->next;
+			}
+			count++;
+		}
+		while (head != NULL)
+		{
+			aux = head;
+			head = head->next;
+			free(aux);
+		}
 	}
 }
-
