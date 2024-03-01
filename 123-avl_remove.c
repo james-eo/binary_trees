@@ -21,15 +21,29 @@ avl_t *avl_remove(avl_t *root, int value)
 		if (root->left == NULL || root->right == NULL)
 		{
 			temp = root->left ? root->left : root->right;
-			free(root);
-			return (temp);
+			if (temp == NULL)
+			{
+				temp = root;
+				root = NULL;
+			}
+			else
+			{
+				*root = *temp;
+			}
+			free(temp);
 		}
-		temp = root->right;
-		while (temp->left != NULL)
-			temp = temp->left;
-		root->n = temp->n;
-		root->right = avl_remove(root->right, temp->n);
+		else
+		{
+			temp = root->right;
+			while (temp->left != NULL)
+				temp = temp->left;
+			root->n = temp->n;
+			root->right = avl_remove(root->right, temp->n);
+		}
 	}
+	if (root == NULL)
+		return (NULL);
+	if (binary_tree_balance(root) < -1 || binary_tree_balance(root) > 1)
+		return (root);
 	return (root);
 }
-
